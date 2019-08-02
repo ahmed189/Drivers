@@ -9,8 +9,8 @@
 /*Range of length from 1 -> 255*/
 #define LENGTH_OF_DATA_BYTES        1
 
-#define POSITION_HANDLER_TX_READY   (fictitious number)
-#define POSITION_HANDLER_RX_READY   (fictitious number)
+#define POSITION_HANDLER_UART   (Uart.INTPOS)
+
 
 
 
@@ -20,7 +20,8 @@ uint8_t buffer[MAX_BUFFER_SIZE]={0};
 /*semaphore*/
      Semaphore Sem;
 
-/*status of UART*/
+
+/*status of UART*//*
 typedef enum UART_Status
 {
     UART_IDLE,
@@ -28,14 +29,14 @@ typedef enum UART_Status
     UART_WAIT_ASKING
 }Uart_Status;
 
-/*StATUS OF INTERRUPT*/
+//StATUS OF INTERRUPT
 typedef enum INTERRUPT_STATUS
 {
     IRQ_NONE,
     IRQ_RX_READY,
     IRQ_TX_READY
 }Interrupt_Status;
-
+*/
 /*Data length from buffer or from buffer*/
 typedef struct UART_Write_Buffer
 {

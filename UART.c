@@ -23,43 +23,56 @@ int UART_Init(void)
         Uart.RX_INT = 1;
 
     /*initialize interrupts handlers*/
-    simpl_install_handler(POSITION_HANDLER_TX_READY,&TX_Ready);
-    simpl_install_handler(POSITION_HANDLER_RX_READY,&RX_Ready);
+    simpl_install_handler(POSITION_HANDLER_UART,&Uart_Handler);
 
     Uart_Buffer_Init();
 
     /*Create semaphore*/
     Sem = OSCreateSemaphore(1);
 
+
     //Enable global interrupts and Finish a critical section
     void OSUnlock();
     //for debugging
     return 1;
 }
-
+void Uart_Handler(void)
+{
+    const uint8_t var = (uint8_t)0x01;
+    if( (var & UART.RX_READY) = (uint8_t)0x01)
+    {
+        RX_Ready();
+    }
+    else;
+    if( (var & UART.TX_READY) = (uint8_t)0x01)
+    {
+        TX_Ready();
+    }
+    else;
+}
 void TX_Ready(void)
 {
     //Atomically decrease the semaphore value by 1. If the value is negative, suspends the calling thread.
-    OSSemaphoreWait(sem);
+    OSSemaphoreWait(Sem);
 
     if(UART_write(&buffer , LENGTH_OF_DATA_BYTES) == 0)
         /*error handling mode*/
     else;
 
-    //
-    OSSemaphoreSignal(sem);
+    //Atomically increments the semaphore value by 1. If the value is non positive, wakes up a suspended thread
+    OSSemaphoreSignal(Sem);
 }
 void RX_Ready(void)
 {
     //Atomically decrease the semaphore value by 1. If the value is negative, suspends the calling thread.
-    OSSemaphoreWait(sem);
+    OSSemaphoreWait(Sem);
 
     if(UART_read(&buffer , LENGTH_OF_DATA_BYTES) == 0)
         /*error handling mode*/
     else;
 
     //Atomically increments the semaphore value by 1. If the value is non positive, wakes up a suspended thread
-    OSSemaphoreSignal(sem);
+    OSSemaphoreSignal(Sem);
 }
 
 int Uart_Buffer_Init(void)
@@ -71,7 +84,6 @@ int Uart_Buffer_Init(void)
 int UART_read(uint8_t *buffer, int len)
 {
     static uint8_t index_R = 0;
-
     //check size of read buffer
     if(len < MAX_BUFFER_SIZE)
     {
