@@ -29,18 +29,9 @@ typedef struct UART_Write_Buffer
 {
     uint8_t Uart_Write_From_Buffer;
     uint8_t Uart_Write_To_Buffer;
-}Uart_Buffer;
+};
 
-/*UART Registers 32 bits*/
-typedef struct UART{
-    uint32_t RX;
-    uint32_t TX;
-    uint32_t RX_READY;
-    uint32_t TX_READY;
-    uint32_t TX_INT;
-    uint32_t RX_INT;
-    uint32_t INTPOS;
-}Uart;
+
 
 
 

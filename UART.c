@@ -1,7 +1,15 @@
 #include "UART.h"
 
+//make instance from data type
+struct UART_Write_Buffer Uart_Buffer;
+
 //prototype of static function
 static int Uart_Buffer_Init(void);
+
+//There is global Structure Called Uart
+//end
+
+
 
 int UART_Init(void)
 {
@@ -106,6 +114,8 @@ int UART_read(uint8_t *buffer, int len)
             index_R = 1;
         }
         else;
+
+        //save data from rx
         *(buffer + Uart_Buffer.Uart_Write_To_Buffer) = Uart.RX;
         Uart_Buffer.Uart_Write_To_Buffer++;
     }
@@ -135,6 +145,8 @@ int UART_write(uint8_t *buffer, int len)
             index_W = 1;
         }
         else;
+
+        //put data to send
         Uart.TX = *(buffer + Uart_Buffer.Uart_Write_From_Buffer);
         Uart_Buffer.Uart_Write_From_Buffer++;
     }
