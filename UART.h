@@ -48,7 +48,7 @@ int UART_read(uint8_t *, int );
 int UART_write(uint8_t *, int);
 
 
-/*interrupts*/
+/*handler will handle them*/
 void TX_Ready(void);
 void RX_Ready(void);
 #endif // UART_H_INCLUDED
