@@ -1,6 +1,7 @@
 #include "UART.h"
 
-
+//prototype of static function
+static int Uart_Buffer_Init(void);
 
 int UART_Init(void)
 {
@@ -29,6 +30,8 @@ int UART_Init(void)
 
     /*Create semaphore*/
     Sem = OSCreateSemaphore(1);
+    Sync_Sem_tx = OSCreateSemaphore(0);
+    Sync_Sem_rx = OSCreateSemaphore(0);
 
 
     //Enable global interrupts and Finish a critical section
@@ -41,18 +44,22 @@ void Uart_Handler(void)
     const uint8_t var = (uint8_t)0x01;
     if( (var & UART.RX_READY) = (uint8_t)0x01)
     {
-        RX_Ready();
+        OSSemaphoreSignal(Sync_Sem_rx);
     }
     else;
     if( (var & UART.TX_READY) = (uint8_t)0x01)
     {
-        TX_Ready();
+        OSSemaphoreSignal(Sync_Sem_tx);
     }
     else;
 }
 void TX_Ready(void)
 {
     //Atomically decrease the semaphore value by 1. If the value is negative, suspends the calling thread.
+    //used for synchronization
+    OSSemaphoreWait(Sync_Sem_tx);
+
+    //Protection from mutual exclusion by entering critical section
     OSSemaphoreWait(Sem);
 
     if(UART_write(&buffer , LENGTH_OF_DATA_BYTES) == 0)
@@ -60,11 +67,17 @@ void TX_Ready(void)
     else;
 
     //Atomically increments the semaphore value by 1. If the value is non positive, wakes up a suspended thread
+    //Release semaphore to end critical section
     OSSemaphoreSignal(Sem);
+
 }
 void RX_Ready(void)
 {
     //Atomically decrease the semaphore value by 1. If the value is negative, suspends the calling thread.
+    //used for synchronization
+    OSSemaphoreWait(Sync_Sem_rx);
+
+    //Protection from mutual exclusion by entering critical section
     OSSemaphoreWait(Sem);
 
     if(UART_read(&buffer , LENGTH_OF_DATA_BYTES) == 0)
@@ -72,14 +85,11 @@ void RX_Ready(void)
     else;
 
     //Atomically increments the semaphore value by 1. If the value is non positive, wakes up a suspended thread
+    //Release semaphore to end critical section
     OSSemaphoreSignal(Sem);
 }
 
-int Uart_Buffer_Init(void)
-{
-    Uart_Buffer.Uart_Write_From_Buffer = 0;
-    Uart_Buffer.Uart_Write_To_Buffer   = 0;
-}
+
 
 int UART_read(uint8_t *buffer, int len)
 {
@@ -134,4 +144,13 @@ int UART_write(uint8_t *buffer, int len)
     }
     return 1;
 
+}
+
+
+
+
+static int Uart_Buffer_Init(void)
+{
+    Uart_Buffer.Uart_Write_From_Buffer = 0;
+    Uart_Buffer.Uart_Write_To_Buffer   = 0;
 }
