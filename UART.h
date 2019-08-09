@@ -24,7 +24,7 @@ uint8_t buffer[MAX_BUFFER_SIZE]={0};
 
 
 
-/*Data length from buffer or from buffer*/
+/*Data length from buffer or to buffer*/
 typedef struct UART_Write_Buffer
 {
     uint8_t Uart_Write_From_Buffer;
